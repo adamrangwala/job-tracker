@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Job Application Tracker</h1>
+
+<div class="mb-3">
+  <a href="{{ url_for('scan_emails') }}" class="btn btn-primary me-2">Scan New Emails</a>
+  <a href="{{ url_for('add_job') }}" class="btn btn-secondary me-2">Add Job Manually</a>
+  <a href="{{ url_for('download') }}" class="btn btn-success">Download Spreadsheet</a>
+</div>
+
+<h2>Needs Review</h2>
+<div class="mb-4">
+  {% if job_emails|length == 0 %}
+    <p>No emails need review!</p>
+  {% else %}
+    {% for email in job_emails %}
+      <div class="card mb-3">
+        <div class="card-body">
+          <h5 class="card-title">{{ email.original_job_title }} at {{ email.original_company }}</h5>
+          <p class="card-text">
+            Status: {{ email.status }}<br>
+            From: {{ email.from }}<br>
+            Subject: {{ email.subject }}
+          </p>
+          
+          <form action="{{ url_for('feedback', id=email._id) }}" method="POST">
+            <div class="mb-3">
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="is_correct" value="true" id="correct-{{ email._id }}">
+                <label class="form-check-label" for="correct-{{ email._id }}">
+                  Classification is correct
+                </label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="is_correct" value="false" id="incorrect-{{ email._id }}">
+                <label class="form-check-label" for="incorrect-{{ email._id }}">
+                  Needs correction
+                </label>
+              </div>
+            </div>
+            
+            <div class="correction-fields" style="display: none;">
+              <div class="mb-3">
+                <label class="form-label">Category</label>
+                <select name="correct_category" class="form-select">
+                  <option value="1">Job application confirmation</option>
+                  <option value="2">Job rejection</option>
+                  <option value="3">Next interview step</option>
+                  <option value="4">Not job-related</option>
+                </select>
+              </div>
+              
+              <div class="mb-3">
+                <label class="form-label">Company</label>
+                <input type="text" name="correct_company" class="form-control" value="{{ email.original_company }}">
+              </div>
+              
+              <div class="mb-3">
+                <label class="form-label">Job Title</label>
+                <input type="text" name="correct_job_title" class="form-control" value="{{ email.original_job_title }}">
+              </div>
+            </div>
+            
+            <button type="submit" class="btn btn-primary">Submit</button>
+          </form>
+        </div>
+      </div>
+    {% endfor %}
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  // Show/hide correction fields based on selection
+  document.querySelectorAll('input[name="is_correct"]').forEach(radio => {
+    radio.addEventListener('change', function() {
+      const form = this.closest('form');
+      const correctionFields = form.querySelector('.correction-fields');
+      
+      if (this.value === 'false') {
+        correctionFields.style.display = 'block';
+      } else {
+        correctionFields.style.display = 'none';
+      }
+    });
+  });
+</script>
+{% endblock %}

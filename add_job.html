@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Add Job Application</h1>
+
+<form action="{{ url_for('add_job') }}" method="POST">
+  <div class="mb-3">
+    <label for="job_title" class="form-label">Job Title</label>
+    <input type="text" class="form-control" id="job_title" name="job_title" required>
+  </div>
+  
+  <div class="mb-3">
+    <label for="company" class="form-label">Company</label>
+    <input type="text" class="form-control" id="company" name="company" required>
+  </div>
+  
+  <div class="mb-3">
+    <label for="date_applied" class="form-label">Date Applied</label>
+    <input type="date" class="form-control" id="date_applied" name="date_applied" required>
+  </div>
+  
+  <div class="mb-3">
+    <label for="status" class="form-label">Status</label>
+    <select class="form-select" id="status" name="status" required>
+      <option value="applied">Applied</option>
+      <option value="rejected">Rejected</option>
+      <option value="next step">Next Step</option>
+    </select>
+  </div>
+  
+  <button type="submit" class="btn btn-primary">Add Job</button>
+  <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">Cancel</a>
+</form>
+{% endblock %}
